@@ -19,9 +19,8 @@ export default function AdminLogin() {
     const password = formData.get('password') as string;
 
     try {
-      // Authentification via la collection 'users'
+      // Authentification via 'users'
       await pb.collection('users').authWithPassword(email, password);
-      // Si succès, redirection vers le dashboard
       router.push('/admin');
     } catch (err) {
       console.error(err);

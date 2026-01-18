@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import pb from '@/lib/pocketbase';
 import { Collection } from '@/types';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner'; // <--- AJOUT
+import { toast } from 'sonner';
 
 export default function NewArtworkPage() {
   const router = useRouter();
@@ -23,11 +23,11 @@ export default function NewArtworkPage() {
 
     try {
       await pb.collection('artworks').create(formData);
-      toast.success('Œuvre créée avec succès !'); // <--- FEEDBACK
+      toast.success('Œuvre créée avec succès !');
       router.push('/admin/artworks');
     } catch (error) {
       console.error(error);
-      toast.error("Erreur lors de la création."); // <--- FEEDBACK
+      toast.error("Erreur lors de la création.");
     } finally {
       setLoading(false);
     }

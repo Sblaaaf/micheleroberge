@@ -38,7 +38,7 @@ export default function AdminArtworks() {
     }
   }
 
-  // Filtrage local
+  // Filtre
   const filteredArtworks = artworks.filter(art => {
     const matchStatus = filterStatus === 'all' || art.status === filterStatus;
     const matchCol = filterCollection === 'all' || art.collection === filterCollection;
@@ -59,7 +59,7 @@ export default function AdminArtworks() {
         </Link>
       </div>
 
-      {/* BARRE DE FILTRES */}
+      {/* FILTRES */}
       <div className="bg-white p-4 rounded-lg shadow-sm border border-stone-100 mb-6 flex flex-col md:flex-row gap-4">
         <div className="flex items-center gap-2 w-full md:w-auto">
           <span className="text-xs font-bold uppercase text-stone-400">Filtrer par :</span>

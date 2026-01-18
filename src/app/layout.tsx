@@ -48,7 +48,6 @@ export default function RootLayout({
       >
         <Header />
         {children}
-        {/* Configuration améliorée du Toaster */}
         <Toaster position="bottom-right" richColors closeButton />
       </body>
     </html>

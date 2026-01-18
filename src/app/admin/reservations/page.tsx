@@ -15,13 +15,13 @@ export default function AdminReservations() {
       .catch(() => toast.error("Erreur chargement"));
   }, []);
 
-  // On passe maintenant l'ID de l'artwork en plus
+  // ID Artwork
   async function updateStatus(id: string, newStatus: string, artworkId?: string) {
     try {
-      // 1. Mettre à jour la réservation
+      // MAJ pour resa
       await pb.collection('reservations').update(id, { status: newStatus });
       
-      // 2. Si on confirme, on passe l'œuvre en "reserved"
+      // changement statut
       if (newStatus === 'confirmed' && artworkId) {
          await pb.collection('artworks').update(artworkId, { status: 'reserved' });
          toast.success("Réservation confirmée & Œuvre mise de côté");
@@ -29,7 +29,7 @@ export default function AdminReservations() {
          toast.success(`Statut mis à jour : ${newStatus}`);
       }
 
-      // Mise à jour locale
+      // MAJ local
       setReservations(reservations.map(r => r.id === id ? { ...r, status: newStatus as any } : r));
     } catch { 
         toast.error("Erreur lors de la mise à jour"); 
@@ -76,7 +76,6 @@ export default function AdminReservations() {
                 
                 {res.status === 'pending' && (
                   <div className="flex gap-2 text-xs">
-                    {/* On passe l'ID de l'artwork ici */}
                     <button onClick={() => updateStatus(res.id, 'confirmed', res.artwork)} className="bg-stone-900 text-white px-3 py-2 rounded hover:bg-stone-700">Accepter</button>
                     <button onClick={() => updateStatus(res.id, 'rejected')} className="bg-white border border-stone-300 text-stone-500 px-3 py-2 rounded hover:text-red-500 hover:border-red-200">Refuser</button>
                   </div>

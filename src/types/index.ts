@@ -22,8 +22,6 @@ export interface Artwork extends PocketBaseRecord {
   status: 'available' | 'sold' | 'reserved';
   images: string[];
   collection: string;
-  // ID du prix Stripe pour les paiements
-  stripe_price_id?: string;
 
   // Relation
   expand?: {
@@ -47,7 +45,6 @@ export interface Reservation extends PocketBaseRecord {
   message: string;
   status: 'pending' | 'confirmed' | 'rejected';
 
-  // Relation
   expand?: {
     artwork?: Artwork;
   };

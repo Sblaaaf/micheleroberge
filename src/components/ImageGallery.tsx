@@ -16,7 +16,7 @@ export default function ImageGallery({ images, recordId, collectionId, title }: 
 
   return (
     <div className="space-y-4">
-      {/* Image Principale */}
+      {/* Image */}
       <div className="relative w-full aspect-[4/5] bg-stone-100 overflow-hidden">
         <Image 
           src={`https://sblaaaf.pockethost.io/api/files/${collectionId}/${recordId}/${mainImage}`}
@@ -27,7 +27,7 @@ export default function ImageGallery({ images, recordId, collectionId, title }: 
         />
       </div>
 
-      {/* Miniatures (s'il y en a plusieurs) */}
+      {/* Miniatures */}
       {images.length > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-2">
           {images.map((img) => (

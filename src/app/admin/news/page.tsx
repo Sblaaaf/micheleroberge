@@ -35,7 +35,7 @@ export default function AdminNews() {
     <div className="max-w-4xl">
       <h1 className="text-3xl font-serif mb-8">Actualités & Expos</h1>
 
-      {/* FORMULAIRE RAPIDE */}
+      {/* FORM */}
       <div className="bg-white p-6 rounded-lg shadow-sm border border-stone-100 mb-12">
         <h2 className="text-sm font-bold uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2">
             <Plus size={16} /> Publier une news
@@ -66,7 +66,6 @@ export default function AdminNews() {
         {news.map((item) => (
           <div key={item.id} className="bg-white p-4 rounded border border-stone-100 flex justify-between items-start">
             <div className="flex gap-4">
-                {/* Petit carré de date */}
                 <div className="bg-stone-100 p-2 rounded text-center min-w-[60px]">
                     <span className="block text-lg font-bold text-stone-800">{new Date(item.date_start).getDate()}</span>
                     <span className="block text-[10px] uppercase text-stone-500">{new Date(item.date_start).toLocaleDateString('fr-FR', { month: 'short' })}</span>

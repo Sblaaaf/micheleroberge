@@ -28,7 +28,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen flex bg-stone-100 font-sans text-stone-900 relative">
       
-      {/* BOUTON BURGER MOBILE */}
+      {/* BURGER MOBILE */}
       <button 
         onClick={() => setSidebarOpen(!isSidebarOpen)}
         className="lg:hidden fixed top-4 right-4 z-50 bg-stone-900 text-white p-2 rounded shadow-lg"
@@ -84,7 +84,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      {/* OVERLAY MOBILE */}
+      {/* Clic hors sidebar */}
       {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/50 z-30 lg:hidden"
@@ -92,7 +92,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         />
       )}
 
-      {/* CONTENU PRINCIPAL */}
+      {/* CONTENU */}
       <main className="flex-1 p-4 lg:p-8 overflow-y-auto w-full">
         {children}
       </main>

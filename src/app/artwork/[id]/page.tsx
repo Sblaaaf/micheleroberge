@@ -35,7 +35,7 @@ export default async function ArtworkPage({ params }: PageProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
         
-        {/* GAUCHE : IMAGES */}
+        {/* IMAGES */}
         <div className="bg-stone-100 lg:h-screen p-4 lg:p-12 flex items-center justify-center overflow-y-auto">
           <div className="w-full max-w-lg">
               <ImageGallery 
@@ -47,7 +47,7 @@ export default async function ArtworkPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* DROITE : INFOS */}
+        {/* INFOS */}
         <div className="flex flex-col justify-center p-8 lg:p-24 bg-stone-50 overflow-y-auto">
           <div className="max-w-md mx-auto w-full">
             
@@ -69,7 +69,7 @@ export default async function ArtworkPage({ params }: PageProps) {
             {/* Description */}
             <div className="text-stone-600 font-light leading-relaxed text-sm lg:text-base space-y-4 mb-8" dangerouslySetInnerHTML={{ __html: artwork.description }} />
 
-            {/* Dimensions (Version discrète) */}
+            {/* Dimensions */}
             <div className="flex gap-6 text-[10px] uppercase tracking-widest text-stone-400 border-t border-stone-100 pt-6">
                {artwork.height && <div>H: {artwork.height} cm</div>}
                {artwork.width && <div>L: {artwork.width} cm</div>}
@@ -87,7 +87,7 @@ export default async function ArtworkPage({ params }: PageProps) {
               )}
             </div>
             
-            {/* Formulaire (Uniquement si dispo) */}
+            {/* FORM si "available" */}
             {isAvailable && <ReservationForm artworkId={artwork.id} />}
 
           </div>

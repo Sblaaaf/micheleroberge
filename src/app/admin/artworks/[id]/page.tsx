@@ -38,7 +38,6 @@ export default function EditArtworkPage() {
     setSaving(true);
     const formData = new FormData(e.currentTarget);
     
-    // Nettoyage input vide
     const imageFile = formData.get('images') as File;
     if (imageFile.size === 0) formData.delete('images');
 
@@ -53,14 +52,13 @@ export default function EditArtworkPage() {
     }
   }
 
-  // Fonction pour supprimer une image spécifique
   async function deleteImage(filename: string) {
     if(!confirm("Supprimer cette image ?")) return;
     try {
         await pb.collection('artworks').update(id, {
-            'images-': [filename] // Syntaxe spéciale PocketBase pour supprimer une image du tableau
+            'images-': [filename]
         });
-        // Mise à jour locale
+        // MAJ locale
         if(artwork) {
             setArtwork({ ...artwork, images: artwork.images.filter(img => img !== filename) });
         }
@@ -83,11 +81,10 @@ export default function EditArtworkPage() {
           <input defaultValue={artwork.title} name="title" type="text" required className="w-full p-3 bg-stone-50 border border-stone-200 rounded focus:border-stone-500 outline-none" />
         </div>
 
-        {/* GESTION IMAGES */}
+        {/* IMAGES */}
         <div>
           <label className="block text-xs uppercase tracking-widest mb-2 font-bold text-stone-500">Galerie Photos</label>
           
-          {/* Images existantes */}
           <div className="flex flex-wrap gap-4 mb-4">
              {artwork.images?.map((img) => (
                <div key={img} className="relative w-24 h-24 bg-stone-100 rounded border border-stone-200 group">

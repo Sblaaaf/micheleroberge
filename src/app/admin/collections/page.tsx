@@ -35,7 +35,7 @@ export default function AdminCollections() {
     <div className="max-w-4xl">
       <h1 className="text-3xl font-serif mb-8">Gérer les Collections</h1>
 
-      {/* FORMULAIRE D'AJOUT (En haut) */}
+      {/* FORM */}
       <div className="bg-white p-6 rounded-lg shadow-sm border border-stone-100 mb-12">
         <h2 className="text-sm font-bold uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2">
             <Plus size={16} /> Nouvelle Collection
@@ -55,7 +55,7 @@ export default function AdminCollections() {
 
       <div className="border-t border-stone-200 my-8"></div>
 
-      {/* LISTE EXISTANTE */}
+      {/* COLLECTIONS */}
       <h2 className="text-xl font-serif mb-6">Collections existantes</h2>
       <div className="grid gap-3">
         {collections.map((col) => (

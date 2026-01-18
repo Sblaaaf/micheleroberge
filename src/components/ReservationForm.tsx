@@ -24,7 +24,7 @@ export default function ReservationForm({ artworkId }: { artworkId: string }) {
       });
       toast.success("Demande envoyée !");
       form.reset();
-      setIsOpen(false); // On referme après succès
+      setIsOpen(false);
     } catch (error) {
       toast.error("Erreur lors de l'envoi");
     } finally {
@@ -35,7 +35,6 @@ export default function ReservationForm({ artworkId }: { artworkId: string }) {
   return (
     <div className="mt-8 pt-8 border-t border-stone-200">
       
-      {/* BOUTON D'OUVERTURE */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex justify-between items-center group"
@@ -44,7 +43,7 @@ export default function ReservationForm({ artworkId }: { artworkId: string }) {
         {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
       </button>
 
-      {/* FORMULAIRE DÉPLIANT */}
+      {/* FORM */}
       {isOpen && (
         <div className="mt-6 animate-fade-in">
           <form onSubmit={handleSubmit} className="space-y-4">

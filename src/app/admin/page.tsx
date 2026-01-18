@@ -11,7 +11,7 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    // On charge les compteurs en parallèle
+    // Compteurs Dashboard
     async function fetchStats() {
       try {
         const artworks = await pb.collection('artworks').getList(1, 1);
@@ -36,19 +36,16 @@ export default function AdminDashboard() {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        {/* CARTE 1 */}
         <div className="bg-white p-8 rounded-lg shadow-sm border border-stone-100">
           <div className="text-stone-400 text-xs uppercase tracking-widest mb-2">Œuvres en ligne</div>
           <div className="text-5xl font-serif text-stone-900">{stats.artworks}</div>
         </div>
 
-        {/* CARTE 2 */}
         <div className="bg-white p-8 rounded-lg shadow-sm border border-stone-100">
           <div className="text-stone-400 text-xs uppercase tracking-widest mb-2">Réservations en attente</div>
           <div className="text-5xl font-serif text-yellow-600">{stats.reservations}</div>
         </div>
 
-        {/* CARTE 3 */}
         <div className="bg-white p-8 rounded-lg shadow-sm border border-stone-100">
           <div className="text-stone-400 text-xs uppercase tracking-widest mb-2">Messages reçus</div>
           <div className="text-5xl font-serif text-stone-900">{stats.messages}</div>
