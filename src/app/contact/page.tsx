@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { toast } from 'sonner';
+import ContactForm from '@/components/ContactForm';
 
 export default function ContactPage() {
   return (
@@ -41,6 +42,12 @@ export default function ContactPage() {
           </div>
         </div>
 
+      </div>
+  
+      <div className="max-w-6xl mx-auto mt-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <div><ContactForm /></div>
+        </div>
       </div>
     </main>
   );
