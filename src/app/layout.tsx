@@ -43,12 +43,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Toaster position="center-center" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${playfair.variable} bg-stone-50 text-stone-900 antialiased`}
       >
         <Header />
         {children}
+        <Toaster position="center-center" />
       </body>
     </html>
   );
