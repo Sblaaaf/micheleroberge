@@ -67,10 +67,12 @@ export default function AdminArtworks() {
                   </span>
                 </td>
                 <td className="p-4 text-right space-x-4">
-                  {/* Lien pour éditer (on créera la page edit plus tard si besoin, ou on réutilise new avec un ID) */}
-                  <button onClick={() => handleDelete(art.id)} className="text-red-400 hover:text-red-600">
-                    Supprimer
-                  </button>
+                    <Link href={`/admin/artworks/${art.id}`} className="text-stone-600 hover:text-stone-900 font-medium">
+                        Modifier
+                    </Link>
+                    <button onClick={() => handleDelete(art.id)} className="text-red-400 hover:text-red-600">
+                        Supprimer
+                    </button>
                 </td>
               </tr>
             ))}
