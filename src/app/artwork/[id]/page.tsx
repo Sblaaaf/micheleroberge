@@ -66,9 +66,15 @@ export default async function ArtworkPage({ params }: PageProps) {
         <div className="flex flex-col justify-center p-8 lg:p-24 bg-stone-50">
           <div className="max-w-md mx-auto w-full">
             
-            <span className="text-xs font-bold tracking-[0.2em] text-stone-400 uppercase">
-              {artwork.category}
-            </span>
+            <div className="flex items-center gap-3 text-xs font-bold tracking-[0.2em] text-stone-400 uppercase mb-2">
+              <span>{artwork.category}</span>
+              {artwork.expand?.collection && (
+                <>
+                  <span className="text-stone-300">|</span>
+                  <span className="text-stone-600">{artwork.expand.collection.title}</span>
+                </>
+              )}
+            </div>
             
             <h1 className="text-5xl lg:text-6xl font-serif mt-4 mb-8 text-stone-900 leading-tight">
               {artwork.title}

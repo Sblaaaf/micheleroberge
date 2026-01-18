@@ -63,6 +63,13 @@ export default function Home() {
                 </h2>
                 <div className="flex justify-center items-center gap-2 mt-1 text-sm text-stone-500 font-light">
                   <span className="capitalize">{art.category}</span>
+                  {/* On affiche la collection si elle existe */}
+                  {art.expand?.collection && (
+                    <>
+                      <span>•</span>
+                      <span className="italic text-stone-400">{art.expand.collection.title}</span>
+                    </>
+                  )}
                   <span>—</span>
                   <span>{art.price} €</span>
                 </div>
