@@ -1,8 +1,9 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import pb from '@/lib/pocketbase';
 import { Collection } from '@/types';
+import { toast } from 'sonner';
+import { Trash2, Plus } from 'lucide-react';
 
 export default function AdminCollections() {
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -14,44 +15,60 @@ export default function AdminCollections() {
   async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const newCol = await pb.collection('collections').create(formData);
-    setCollections([...collections, newCol]);
-    (e.target as HTMLFormElement).reset();
+    try {
+        const newCol = await pb.collection('collections').create(formData);
+        setCollections([...collections, newCol]);
+        (e.target as HTMLFormElement).reset();
+        toast.success("Collection ajoutée");
+    } catch { toast.error("Erreur"); }
   }
 
   async function handleDelete(id: string) {
-    if (confirm('Supprimer cette collection ?')) {
+    if (confirm('Supprimer ?')) {
       await pb.collection('collections').delete(id);
       setCollections(collections.filter(c => c.id !== id));
+      toast.success("Supprimé");
     }
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      
-      {/* LISTE */}
-      <div>
-        <h1 className="text-3xl font-serif mb-8">Collections</h1>
-        <ul className="space-y-4">
-          {collections.map((col) => (
-            <li key={col.id} className="bg-white p-4 rounded shadow-sm border border-stone-100 flex justify-between items-center">
-              <span className="font-medium text-stone-900">{col.title}</span>
-              <button onClick={() => handleDelete(col.id)} className="text-xs text-red-400 hover:text-red-600 uppercase tracking-widest">
-                Supprimer
-              </button>
-            </li>
-          ))}
-        </ul>
+    <div className="max-w-4xl">
+      <h1 className="text-3xl font-serif mb-8">Gérer les Collections</h1>
+
+      {/* FORMULAIRE D'AJOUT (En haut) */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-stone-100 mb-12">
+        <h2 className="text-sm font-bold uppercase tracking-widest text-stone-500 mb-4 flex items-center gap-2">
+            <Plus size={16} /> Nouvelle Collection
+        </h2>
+        <form onSubmit={handleCreate} className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <input name="title" type="text" placeholder="Titre (ex: Été 2024)" required className="w-full p-3 bg-stone-50 border border-stone-200 rounded" />
+          </div>
+          <div className="flex-1">
+             <input name="description" type="text" placeholder="Description courte (optionnel)" className="w-full p-3 bg-stone-50 border border-stone-200 rounded" />
+          </div>
+          <button type="submit" className="bg-stone-900 text-white px-6 py-3 uppercase tracking-widest text-xs rounded hover:bg-stone-700">
+            Ajouter
+          </button>
+        </form>
       </div>
 
-      {/* CREATION RAPIDE */}
-      <div className="bg-stone-200 p-8 rounded-lg h-fit">
-        <h2 className="text-xl font-serif mb-4">Ajouter une collection</h2>
-        <form onSubmit={handleCreate} className="space-y-4">
-          <input name="title" type="text" placeholder="Nom (ex: Été 2024)" required className="w-full p-3 border border-stone-300" />
-          <textarea name="description" placeholder="Description (optionnel)" className="w-full p-3 border border-stone-300"></textarea>
-          <button type="submit" className="w-full bg-stone-900 text-white py-3 uppercase tracking-widest text-xs">Ajouter</button>
-        </form>
+      <div className="border-t border-stone-200 my-8"></div>
+
+      {/* LISTE EXISTANTE */}
+      <h2 className="text-xl font-serif mb-6">Collections existantes</h2>
+      <div className="grid gap-3">
+        {collections.map((col) => (
+            <div key={col.id} className="bg-white p-4 rounded border border-stone-100 flex justify-between items-center group">
+                <div>
+                    <div className="font-bold text-stone-800">{col.title}</div>
+                    {col.description && <div className="text-sm text-stone-500">{col.description}</div>}
+                </div>
+                <button onClick={() => handleDelete(col.id)} className="text-stone-300 hover:text-red-500 transition-colors p-2">
+                    <Trash2 size={18} />
+                </button>
+            </div>
+        ))}
       </div>
     </div>
   );

@@ -34,7 +34,7 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-stone-100">
       <div className="bg-white p-12 rounded-xl shadow-lg w-full max-w-md">
-        <h1 className="text-3xl font-serif text-stone-900 mb-8 text-center">Espace Artiste</h1>
+        <h1 className="text-3xl font-serif text-stone-900 mb-8 text-center">Connexion Admin</h1>
         
         <form onSubmit={handleLogin} className="space-y-6">
           <div>

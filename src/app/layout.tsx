@@ -42,13 +42,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${playfair.variable} bg-stone-50 text-stone-900 antialiased`}
       >
         <Header />
         {children}
-        <Toaster position="center-center" />
+        {/* Configuration améliorée du Toaster */}
+        <Toaster position="bottom-right" richColors closeButton />
       </body>
     </html>
   );

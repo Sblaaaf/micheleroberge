@@ -5,6 +5,8 @@ import pb from '@/lib/pocketbase';
 import { Collection, Artwork } from '@/types';
 import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
+import { toast } from 'sonner';
+import { X } from 'lucide-react';
 
 export default function EditArtworkPage() {
   const router = useRouter();
@@ -16,25 +18,19 @@ export default function EditArtworkPage() {
   const [saving, setSaving] = useState(false);
   const [artwork, setArtwork] = useState<Artwork | null>(null);
 
-  // 1. On charge l'œuvre ET les collections au démarrage
   useEffect(() => {
-    if (!id) return;
-    async function loadData() {
-      try {
-        const [cols, art] = await Promise.all([
-          pb.collection('collections').getFullList<Collection>(),
-          pb.collection('artworks').getOne<Artwork>(id)
-        ]);
-        setCollections(cols);
-        setArtwork(art);
-      } catch (error) {
-        alert("Impossible de charger l'œuvre");
+    if(!id) return;
+    Promise.all([
+      pb.collection('collections').getFullList<Collection>(),
+      pb.collection('artworks').getOne<Artwork>(id)
+    ]).then(([cols, art]) => {
+      setCollections(cols);
+      setArtwork(art);
+      setLoading(false);
+    }).catch(() => {
+        toast.error("Erreur de chargement");
         router.push('/admin/artworks');
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
+    });
   }, [id, router]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -42,72 +38,93 @@ export default function EditArtworkPage() {
     setSaving(true);
     const formData = new FormData(e.currentTarget);
     
-    // Si l'utilisateur n'a pas mis de nouvelle image, PocketBase garde l'ancienne
-    // Mais le champ file vide peut poser souci, donc on le gère :
+    // Nettoyage input vide
     const imageFile = formData.get('images') as File;
-    if (imageFile.size === 0) {
-      formData.delete('images');
-    }
+    if (imageFile.size === 0) formData.delete('images');
 
     try {
       await pb.collection('artworks').update(id, formData);
+      toast.success("Modifications enregistrées !");
       router.push('/admin/artworks');
     } catch (error) {
-      alert("Erreur lors de la modification");
+      toast.error("Erreur lors de l'enregistrement");
     } finally {
       setSaving(false);
     }
   }
 
-  if (loading || !artwork) return <div className="p-8">Chargement...</div>;
+  // Fonction pour supprimer une image spécifique
+  async function deleteImage(filename: string) {
+    if(!confirm("Supprimer cette image ?")) return;
+    try {
+        await pb.collection('artworks').update(id, {
+            'images-': [filename] // Syntaxe spéciale PocketBase pour supprimer une image du tableau
+        });
+        // Mise à jour locale
+        if(artwork) {
+            setArtwork({ ...artwork, images: artwork.images.filter(img => img !== filename) });
+        }
+        toast.success("Image supprimée");
+    } catch(e) {
+        toast.error("Impossible de supprimer l'image");
+    }
+  }
+
+  if (loading || !artwork) return <div className="p-8 text-center">Chargement...</div>;
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-3xl mx-auto">
       <h1 className="text-3xl font-serif mb-8">Modifier : {artwork.title}</h1>
       
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-lg shadow-sm">
+      <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-lg shadow-sm border border-stone-100">
         
-        {/* TITRE */}
         <div>
-          <label className="block text-xs uppercase tracking-widest mb-2">Titre</label>
-          <input defaultValue={artwork.title} name="title" type="text" required className="w-full p-3 bg-stone-50 border" />
+          <label className="block text-xs uppercase tracking-widest mb-2 font-bold text-stone-500">Titre</label>
+          <input defaultValue={artwork.title} name="title" type="text" required className="w-full p-3 bg-stone-50 border border-stone-200 rounded focus:border-stone-500 outline-none" />
         </div>
 
-        {/* IMAGE ACTUELLE + UPLOAD */}
+        {/* GESTION IMAGES */}
         <div>
-          <label className="block text-xs uppercase tracking-widest mb-2">Photo</label>
-          <div className="flex items-center gap-4 mb-2">
-             {artwork.images && artwork.images.length > 0 && (
-               <div className="relative w-16 h-16 bg-stone-200">
+          <label className="block text-xs uppercase tracking-widest mb-2 font-bold text-stone-500">Galerie Photos</label>
+          
+          {/* Images existantes */}
+          <div className="flex flex-wrap gap-4 mb-4">
+             {artwork.images?.map((img) => (
+               <div key={img} className="relative w-24 h-24 bg-stone-100 rounded border border-stone-200 group">
                   <Image 
-                    src={`https://sblaaaf.pockethost.io/api/files/${artwork.collectionId}/${artwork.id}/${artwork.images[0]}`}
-                    alt="Actuelle" fill className="object-cover"
+                    src={`https://sblaaaf.pockethost.io/api/files/${artwork.collectionId}/${artwork.id}/${img}`}
+                    alt="Artwork" fill className="object-cover rounded"
                   />
+                  <button 
+                    type="button"
+                    onClick={() => deleteImage(img)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Supprimer cette photo"
+                  >
+                    <X size={12} />
+                  </button>
                </div>
-             )}
-             <div className="text-xs text-stone-500 italic">Laissez vide pour garder l'image actuelle</div>
+             ))}
           </div>
-          <input name="images" type="file" accept="image/*" className="w-full p-3 bg-stone-50 border" />
+
+          <div className="bg-stone-50 p-4 rounded border border-dashed border-stone-300">
+            <span className="text-sm text-stone-500 block mb-2">Ajouter des photos (s'ajouteront à la suite) :</span>
+            <input name="images" type="file" accept="image/*" multiple className="w-full text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-stone-900 file:text-white hover:file:bg-stone-700 cursor-pointer" />
+          </div>
         </div>
 
-        {/* CATEGORIE & PRIX & STATUT */}
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs uppercase tracking-widest mb-2">Catégorie</label>
-            <input 
-              defaultValue={artwork.category || 'Sculpture'} 
-              name="category" 
-              type="text" 
-              className="w-full p-3 bg-stone-50 border" 
-            />
+            <label className="block text-xs uppercase tracking-widest mb-2 font-bold text-stone-500">Catégorie</label>
+            <input defaultValue={artwork.category || 'Sculpture'} name="category" type="text" className="w-full p-3 bg-stone-50 border border-stone-200 rounded" />
           </div>
           <div>
-            <label className="block text-xs uppercase tracking-widest mb-2">Prix (€)</label>
-            <input defaultValue={artwork.price} name="price" type="number" required className="w-full p-3 bg-stone-50 border" />
+            <label className="block text-xs uppercase tracking-widest mb-2 font-bold text-stone-500">Prix (€)</label>
+            <input defaultValue={artwork.price} name="price" type="number" required className="w-full p-3 bg-stone-50 border border-stone-200 rounded" />
           </div>
           <div>
-            <label className="block text-xs uppercase tracking-widest mb-2">Statut</label>
-            <select defaultValue={artwork.status} name="status" className="w-full p-3 bg-stone-50 border font-bold text-stone-700">
+            <label className="block text-xs uppercase tracking-widest mb-2 font-bold text-stone-500">Statut</label>
+            <select defaultValue={artwork.status} name="status" className="w-full p-3 bg-stone-50 border border-stone-200 rounded font-medium">
               <option value="available">Disponible</option>
               <option value="reserved">Réservé</option>
               <option value="sold">Vendu</option>
@@ -115,36 +132,31 @@ export default function EditArtworkPage() {
           </div>
         </div>
 
-        {/* DIMENSIONS */}
         <div className="grid grid-cols-3 gap-4">
-            <input defaultValue={artwork.width} name="width" type="number" placeholder="Larg." className="p-3 bg-stone-50 border" />
-            <input defaultValue={artwork.height} name="height" type="number" placeholder="Haut." className="p-3 bg-stone-50 border" />
-            <input defaultValue={artwork.depth} name="depth" type="number" placeholder="Prof." className="p-3 bg-stone-50 border" />
+            <div><label className="text-[10px] uppercase text-stone-400">Larg.</label><input defaultValue={artwork.width} name="width" type="number" className="w-full p-2 bg-stone-50 border rounded" /></div>
+            <div><label className="text-[10px] uppercase text-stone-400">Haut.</label><input defaultValue={artwork.height} name="height" type="number" className="w-full p-2 bg-stone-50 border rounded" /></div>
+            <div><label className="text-[10px] uppercase text-stone-400">Prof.</label><input defaultValue={artwork.depth} name="depth" type="number" className="w-full p-2 bg-stone-50 border rounded" /></div>
         </div>
 
-        {/* COLLECTION */}
         <div>
-           <label className="block text-xs uppercase tracking-widest mb-2">Collection</label>
-           <select defaultValue={artwork.collection} name="collection" className="w-full p-3 bg-stone-50 border">
+           <label className="block text-xs uppercase tracking-widest mb-2 font-bold text-stone-500">Collection</label>
+           <select defaultValue={artwork.collection} name="collection" className="w-full p-3 bg-stone-50 border border-stone-200 rounded">
              <option value="">Aucune</option>
-             {collections.map(c => (
-               <option key={c.id} value={c.id}>{c.title}</option>
-             ))}
+             {collections.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
            </select>
         </div>
 
-        {/* DESCRIPTION */}
         <div>
-          <label className="block text-xs uppercase tracking-widest mb-2">Description</label>
-          <textarea defaultValue={artwork.description} name="description" rows={4} className="w-full p-3 bg-stone-50 border"></textarea>
+          <label className="block text-xs uppercase tracking-widest mb-2 font-bold text-stone-500">Description</label>
+          <textarea defaultValue={artwork.description} name="description" rows={5} className="w-full p-3 bg-stone-50 border border-stone-200 rounded"></textarea>
         </div>
 
-        <div className="flex gap-4">
-            <button type="button" onClick={() => router.back()} className="w-1/3 bg-stone-200 text-stone-600 py-4 uppercase tracking-widest hover:bg-stone-300">
+        <div className="flex gap-4 pt-4">
+            <button type="button" onClick={() => router.back()} className="px-8 py-4 bg-stone-100 text-stone-600 uppercase tracking-widest text-xs rounded hover:bg-stone-200 transition-colors">
                 Annuler
             </button>
-            <button type="submit" disabled={saving} className="w-2/3 bg-stone-900 text-white py-4 uppercase tracking-widest hover:bg-stone-700">
-                {saving ? 'Enregistrement...' : 'Mettre à jour'}
+            <button type="submit" disabled={saving} className="flex-1 bg-stone-900 text-white py-4 uppercase tracking-widest text-xs rounded hover:bg-stone-800 transition-colors">
+                {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
             </button>
         </div>
       </form>

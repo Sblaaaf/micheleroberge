@@ -11,35 +11,21 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchArtworks = async () => {
-      try {
-        const records = await pb.collection('artworks').getFullList<Artwork>({
-          sort: '-created',
-          expand: 'collection',
-        });
-        setArtworks(records);
-      } catch (error) {
-        console.error("Erreur", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchArtworks();
+    pb.collection('artworks').getFullList<Artwork>({
+      sort: '-created',
+      expand: 'collection',
+    }).then(setArtworks).finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-stone-400 font-light">Chargement de la collection...</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-stone-400 font-light tracking-widest uppercase text-xs">Chargement de la collection...</div>;
 
   return (
     <main className="min-h-screen bg-stone-50 text-stone-800">
-      
-      {/* GRILLE D'ŒUVRES ÉPURÉE */}
       <div className="px-6 md:px-12 pb-24 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
           {artworks.map((art) => (
             <Link href={`/artwork/${art.id}`} key={art.id} className="group cursor-pointer block">
-              {/* Conteneur Image : Ratio 4/5 (Portrait) pour l'élégance */}
-              <div className="relative w-full aspect-[4/5] overflow-hidden bg-stone-200 mb-4">
+              <div className="relative w-full aspect-[4/5] overflow-hidden bg-stone-200 mb-6">
                  {art.images && art.images.length > 0 && (
                    <Image 
                      src={`https://sblaaaf.pockethost.io/api/files/${art.collectionId}/${art.id}/${art.images[0]}`}
@@ -48,31 +34,22 @@ export default function Home() {
                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                    />
                  )}
-                 {/* Badge statut discret */}
                  {art.status !== 'available' && (
                    <div className="absolute top-4 right-4 bg-white/90 px-3 py-1 text-[10px] uppercase tracking-widest backdrop-blur-sm">
-                     {art.status}
+                     {art.status === 'sold' ? 'Vendu' : 'Réservé'}
                    </div>
                  )}
               </div>
 
-              {/* Infos minimalistes en bas */}
-              <div className="text-center">
-                <h2 className="font-serif text-xl text-stone-900 group-hover:text-stone-600 transition-colors">
+              <div className="text-center space-y-2">
+                <h2 className="font-serif text-2xl text-stone-900 group-hover:text-stone-600 transition-colors">
                   {art.title}
                 </h2>
-                <div className="flex justify-center items-center gap-2 mt-1 text-sm text-stone-500 font-light">
-                  <span className="capitalize">{art.category}</span>
-                  {/* On affiche la collection si elle existe */}
-                  {art.expand?.collection && (
-                    <>
-                      <span>•</span>
-                      <span className="italic text-stone-400">{art.expand.collection.title}</span>
-                    </>
-                  )}
-                  <span>—</span>
-                  <span>{art.price} €</span>
-                </div>
+                {art.expand?.collection && (
+                    <div className="text-xs uppercase tracking-[0.2em] text-stone-400">
+                        {art.expand.collection.title}
+                    </div>
+                )}
               </div>
             </Link>
           ))}
