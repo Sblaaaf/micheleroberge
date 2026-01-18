@@ -2,14 +2,14 @@
 
 import { useState } from 'react';
 import pb from '@/lib/pocketbase';
+import { toast } from 'sonner'; // <--- AJOUT
 
 export default function ReservationForm({ artworkId }: { artworkId: string }) {
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus('submitting');
-
     const formData = new FormData(e.currentTarget);
 
     try {
@@ -21,9 +21,11 @@ export default function ReservationForm({ artworkId }: { artworkId: string }) {
         status: 'pending'
       });
       setStatus('success');
+      toast.success("Demande envoyée avec succès !"); // <--- FEEDBACK
     } catch (error) {
       console.error(error);
-      setStatus('error');
+      setStatus('idle');
+      toast.error("Erreur lors de l'envoi. Veuillez réessayer."); // <--- FEEDBACK
     }
   }
 
@@ -46,50 +48,22 @@ export default function ReservationForm({ artworkId }: { artworkId: string }) {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="name" className="sr-only">Votre nom</label>
-          <input 
-            type="text" 
-            name="name" 
-            id="name"
-            placeholder="Votre nom" 
-            required 
-            className="w-full bg-stone-50 border border-stone-200 p-3 text-sm focus:outline-none focus:border-stone-500 transition-colors"
-          />
+          <input type="text" name="name" id="name" placeholder="Votre nom" required className="w-full bg-stone-50 border border-stone-200 p-3 text-sm focus:outline-none focus:border-stone-500 transition-colors" />
         </div>
         
         <div>
           <label htmlFor="email" className="sr-only">Votre email</label>
-          <input 
-            type="email" 
-            name="email" 
-            id="email"
-            placeholder="Votre email" 
-            required 
-            className="w-full bg-stone-50 border border-stone-200 p-3 text-sm focus:outline-none focus:border-stone-500 transition-colors"
-          />
+          <input type="email" name="email" id="email" placeholder="Votre email" required className="w-full bg-stone-50 border border-stone-200 p-3 text-sm focus:outline-none focus:border-stone-500 transition-colors" />
         </div>
 
         <div>
           <label htmlFor="message" className="sr-only">Message (Optionnel)</label>
-          <textarea 
-            name="message" 
-            id="message"
-            placeholder="Un message pour l'artiste ? (Optionnel)" 
-            rows={3}
-            className="w-full bg-stone-50 border border-stone-200 p-3 text-sm focus:outline-none focus:border-stone-500 transition-colors resize-none"
-          ></textarea>
+          <textarea name="message" id="message" placeholder="Un message pour l'artiste ? (Optionnel)" rows={3} className="w-full bg-stone-50 border border-stone-200 p-3 text-sm focus:outline-none focus:border-stone-500 transition-colors resize-none"></textarea>
         </div>
 
-        <button 
-          type="submit" 
-          disabled={status === 'submitting'}
-          className="w-full bg-stone-900 text-white py-4 uppercase tracking-widest text-xs hover:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-wait"
-        >
+        <button type="submit" disabled={status === 'submitting'} className="w-full bg-stone-900 text-white py-4 uppercase tracking-widest text-xs hover:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-wait">
           {status === 'submitting' ? 'Envoi en cours...' : 'Envoyer une demande de réservation'}
         </button>
-
-        {status === 'error' && (
-          <p className="text-red-500 text-xs text-center">Une erreur est survenue. Réessayez plus tard.</p>
-        )}
       </form>
       
       <p className="text-[10px] text-stone-400 text-center mt-4 uppercase tracking-wider">

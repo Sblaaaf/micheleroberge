@@ -3,22 +3,31 @@
 import { useEffect, useState } from 'react';
 import pb from '@/lib/pocketbase';
 import { Reservation } from '@/types';
+import { toast } from 'sonner'; // <--- AJOUT
 
 export default function AdminReservations() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
 
   useEffect(() => {
-    // On charge les réservations ET les infos de l'œuvre associée (expand)
     pb.collection('reservations').getFullList<Reservation>({ 
       sort: '-created', 
       expand: 'artwork' 
-    }).then(setReservations);
+    }).then(setReservations)
+      .catch(err => {
+         console.error(err);
+         toast.error("Impossible de charger les réservations (Vérifiez les droits API)");
+      });
   }, []);
 
   async function updateStatus(id: string, newStatus: string) {
-    await pb.collection('reservations').update(id, { status: newStatus });
-    // Mise à jour locale pour l'affichage
-    setReservations(reservations.map(r => r.id === id ? { ...r, status: newStatus as any } : r));
+    try {
+      await pb.collection('reservations').update(id, { status: newStatus });
+      setReservations(reservations.map(r => r.id === id ? { ...r, status: newStatus as any } : r));
+      toast.success(`Statut mis à jour : ${newStatus}`); // <--- SUCCESS
+    } catch (error) {
+      console.error(error);
+      toast.error("Erreur : Droits insuffisants (Erreur 403)"); // <--- ERROR HANDLING
+    }
   }
 
   return (
@@ -35,26 +44,25 @@ export default function AdminReservations() {
                 <p className="text-sm text-stone-500">Demandé par <strong>{res.client_name}</strong> ({res.client_email})</p>
                 {res.message && <p className="mt-2 text-stone-600 italic">"{res.message}"</p>}
               </div>
-              <div className="text-right">
-                <span className={`inline-block px-3 py-1 rounded text-xs uppercase tracking-widest mb-2 ${
+              <div className="text-right flex flex-col items-end gap-2">
+                <span className={`inline-block px-3 py-1 rounded text-xs uppercase tracking-widest ${
                   res.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                   res.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-stone-200 text-stone-500'
                 }`}>
                   {res.status}
                 </span>
-                <div className="flex gap-2 text-xs">
-                  {res.status === 'pending' && (
-                    <>
-                      <button onClick={() => updateStatus(res.id, 'confirmed')} className="text-green-600 hover:underline">Accepter</button>
-                      <button onClick={() => updateStatus(res.id, 'rejected')} className="text-red-400 hover:underline">Refuser</button>
-                    </>
-                  )}
-                </div>
+                
+                {res.status === 'pending' && (
+                  <div className="flex gap-2 text-xs">
+                    <button onClick={() => updateStatus(res.id, 'confirmed')} className="text-green-600 hover:underline font-bold">Accepter</button>
+                    <button onClick={() => updateStatus(res.id, 'rejected')} className="text-red-400 hover:underline">Refuser</button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         ))}
-        {reservations.length === 0 && <p className="text-stone-400">Aucune réservation.</p>}
+        {reservations.length === 0 && <p className="text-stone-400">Aucune réservation pour le moment.</p>}
       </div>
     </div>
   );

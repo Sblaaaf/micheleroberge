@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react';
 import pb from '@/lib/pocketbase';
 import { Collection } from '@/types';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner'; // <--- AJOUT
 
 export default function NewArtworkPage() {
   const router = useRouter();
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Charger les collections pour le menu déroulant
   useEffect(() => {
     pb.collection('collections').getFullList<Collection>().then(setCollections);
   }, []);
@@ -19,16 +19,15 @@ export default function NewArtworkPage() {
     e.preventDefault();
     setLoading(true);
     const formData = new FormData(e.currentTarget);
-    
-    // Par défaut status = available
     formData.append('status', 'available');
 
     try {
       await pb.collection('artworks').create(formData);
-      router.push('/admin/artworks'); // Redirection vers la liste (à créer)
+      toast.success('Œuvre créée avec succès !'); // <--- FEEDBACK
+      router.push('/admin/artworks');
     } catch (error) {
-      alert("Erreur lors de la création");
       console.error(error);
+      toast.error("Erreur lors de la création."); // <--- FEEDBACK
     } finally {
       setLoading(false);
     }
@@ -40,23 +39,21 @@ export default function NewArtworkPage() {
       
       <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-lg shadow-sm">
         
-        {/* TITRE */}
         <div>
           <label className="block text-xs uppercase tracking-widest mb-2">Titre</label>
           <input name="title" type="text" required className="w-full p-3 bg-stone-50 border" />
         </div>
 
-        {/* IMAGE */}
         <div>
-          <label className="block text-xs uppercase tracking-widest mb-2">Photo principale</label>
-          <input name="images" type="file" accept="image/*" required className="w-full p-3 bg-stone-50 border" />
+          <label className="block text-xs uppercase tracking-widest mb-2">Photos (Multiple possible)</label>
+          {/* AJOUT DE MULTIPLE ICI */}
+          <input name="images" type="file" accept="image/*" multiple required className="w-full p-3 bg-stone-50 border" />
+          <p className="text-xs text-stone-500 mt-1">Maintenez CTRL ou CMD pour sélectionner plusieurs photos.</p>
         </div>
 
-        {/* CATEGORIE & PRIX */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-xs uppercase tracking-widest mb-2">Catégorie</label>
-            {/* On met "Sculpture" par défaut pour lui faire gagner du temps */}
             <input 
               name="category" 
               type="text" 
@@ -71,14 +68,12 @@ export default function NewArtworkPage() {
           </div>
         </div>
 
-        {/* DIMENSIONS */}
         <div className="grid grid-cols-3 gap-4">
             <input name="width" type="number" placeholder="Larg." className="p-3 bg-stone-50 border" />
             <input name="height" type="number" placeholder="Haut." className="p-3 bg-stone-50 border" />
             <input name="depth" type="number" placeholder="Prof." className="p-3 bg-stone-50 border" />
         </div>
 
-        {/* COLLECTION */}
         <div>
            <label className="block text-xs uppercase tracking-widest mb-2">Collection</label>
            <select name="collection" className="w-full p-3 bg-stone-50 border">
@@ -89,13 +84,12 @@ export default function NewArtworkPage() {
            </select>
         </div>
 
-        {/* DESCRIPTION */}
         <div>
           <label className="block text-xs uppercase tracking-widest mb-2">Description</label>
           <textarea name="description" rows={4} className="w-full p-3 bg-stone-50 border"></textarea>
         </div>
 
-        <button type="submit" disabled={loading} className="w-full bg-stone-900 text-white py-4 uppercase tracking-widest">
+        <button type="submit" disabled={loading} className="w-full bg-stone-900 text-white py-4 uppercase tracking-widest hover:bg-stone-700 transition-colors">
           {loading ? 'Création...' : 'Ajouter cette œuvre'}
         </button>
       </form>
