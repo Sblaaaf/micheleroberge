@@ -3,6 +3,7 @@ import { Artwork } from '@/types';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import ReservationForm from '@/components/ReservationForm';
 
 // 1. Static Params : On génère la liste des IDs (ça, ça ne change pas)
 export async function generateStaticParams() {
@@ -94,15 +95,20 @@ export default async function ArtworkPage({ params }: PageProps) {
             <div className="mt-16 flex items-center justify-between">
               <div className="text-3xl font-serif text-stone-800">{artwork.price} €</div>
               
-              {artwork.status === 'available' ? (
-                <button className="px-8 py-3 bg-stone-900 text-white text-xs uppercase tracking-widest hover:bg-stone-700 transition-colors">
-                  Acquérir
-                </button>
-              ) : (
-                <span className="px-4 py-2 bg-stone-100 text-stone-400 text-xs uppercase tracking-widest">
-                  {artwork.status === 'sold' ? 'Vendu' : 'Réservé'}
-                </span>
-              )}
+              <div className="mt-8">
+                {artwork.status === 'available' ? (
+                  /* Si dispo : On affiche le formulaire */
+                  <ReservationForm artworkId={artwork.id} />
+                ) : (
+                  /* Si pas dispo : On affiche juste un message */
+                  <div className="p-4 bg-stone-100 text-center border border-stone-200">
+                    <span className="block font-serif text-lg text-stone-500 mb-1">Cette œuvre n'est plus disponible</span>
+                    <span className="text-xs uppercase tracking-widest text-stone-400">
+                      {artwork.status === 'sold' ? 'Vendue' : 'Réservée'}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
 
           </div>

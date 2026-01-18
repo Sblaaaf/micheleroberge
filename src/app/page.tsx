@@ -31,15 +31,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-stone-50 text-stone-800">
-      {/* HEADER MINIMALISTE */}
-      <header className="py-20 px-8 text-center">
-        <h1 className="text-4xl md:text-5xl font-serif text-stone-900 tracking-wide">
-          Atelier Michèle Roberge
-        </h1>
-        <p className="mt-4 text-stone-500 uppercase tracking-widest text-xs">
-          Céramique Contemporaine & Pièces Uniques
-        </p>
-      </header>
       
       {/* GRILLE D'ŒUVRES ÉPURÉE */}
       <div className="px-6 md:px-12 pb-24 max-w-7xl mx-auto">
