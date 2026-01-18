@@ -12,26 +12,31 @@ export default function AdminReservations() {
   useEffect(() => {
     pb.collection('reservations').getFullList<Reservation>({ sort: '-created', expand: 'artwork' })
       .then(setReservations)
-      .catch(() => toast.error("Erreur de chargement (droits ?)"));
+      .catch(() => toast.error("Erreur chargement"));
   }, []);
 
-  async function updateStatus(id: string, newStatus: string) {
+  // On passe maintenant l'ID de l'artwork en plus
+  async function updateStatus(id: string, newStatus: string, artworkId?: string) {
     try {
+      // 1. Mettre à jour la réservation
       await pb.collection('reservations').update(id, { status: newStatus });
+      
+      // 2. Si on confirme, on passe l'œuvre en "reserved"
+      if (newStatus === 'confirmed' && artworkId) {
+         await pb.collection('artworks').update(artworkId, { status: 'reserved' });
+         toast.success("Réservation confirmée & Œuvre mise de côté");
+      } else {
+         toast.success(`Statut mis à jour : ${newStatus}`);
+      }
+
+      // Mise à jour locale
       setReservations(reservations.map(r => r.id === id ? { ...r, status: newStatus as any } : r));
-      toast.success(`Statut mis à jour`);
-    } catch { toast.error("Erreur droits"); }
+    } catch { 
+        toast.error("Erreur lors de la mise à jour"); 
+    }
   }
 
   const filtered = reservations.filter(r => filter === 'all' || r.status === filter);
-
-  // Helper traduction
-  const labelStatus = (s: string) => {
-      if(s === 'pending') return 'En attente';
-      if(s === 'confirmed') return 'Confirmé';
-      if(s === 'rejected') return 'Refusé';
-      return s;
-  }
 
   return (
     <div>
@@ -53,7 +58,7 @@ export default function AdminReservations() {
                     {new Date(res.created).toLocaleDateString('fr-FR')}
                 </div>
                 <h3 className="text-lg font-bold text-stone-900 mb-1">
-                  {res.expand?.artwork?.title || 'Œuvre supprimée'}
+                  {res.expand?.artwork?.title || 'Œuvre introuvable'}
                 </h3>
                 <div className="text-sm text-stone-600">
                     <span className="font-bold">{res.client_name}</span> • <a href={`mailto:${res.client_email}`} className="underline hover:text-stone-900">{res.client_email}</a>
@@ -66,12 +71,13 @@ export default function AdminReservations() {
                   res.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                   res.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-stone-100 text-stone-500 line-through'
                 }`}>
-                  {labelStatus(res.status)}
+                  {res.status === 'pending' ? 'En attente' : res.status === 'confirmed' ? 'Confirmé' : 'Refusé'}
                 </span>
                 
                 {res.status === 'pending' && (
                   <div className="flex gap-2 text-xs">
-                    <button onClick={() => updateStatus(res.id, 'confirmed')} className="bg-stone-900 text-white px-3 py-2 rounded hover:bg-stone-700">Accepter</button>
+                    {/* On passe l'ID de l'artwork ici */}
+                    <button onClick={() => updateStatus(res.id, 'confirmed', res.artwork)} className="bg-stone-900 text-white px-3 py-2 rounded hover:bg-stone-700">Accepter</button>
                     <button onClick={() => updateStatus(res.id, 'rejected')} className="bg-white border border-stone-300 text-stone-500 px-3 py-2 rounded hover:text-red-500 hover:border-red-200">Refuser</button>
                   </div>
                 )}
