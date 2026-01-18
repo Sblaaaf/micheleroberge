@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import ReservationForm from '@/components/ReservationForm';
+import ImageGallery from '@/components/ImageGallery';
 
 // 1. Static Params : On génère la liste des IDs (ça, ça ne change pas)
 export async function generateStaticParams() {
@@ -51,7 +52,7 @@ export default async function ArtworkPage({ params }: PageProps) {
         
         {/* COLONNE GAUCHE */}
         <div className="relative h-[50vh] lg:h-screen bg-stone-200">
-          {mainImage && (
+          {/* {mainImage && (
             <Image 
               src={mainImage} 
               alt={artwork.title} 
@@ -59,7 +60,17 @@ export default async function ArtworkPage({ params }: PageProps) {
               className="object-cover"
               priority
             />
-          )}
+          )} */}
+          <div className="bg-stone-50 lg:h-screen p-4 lg:p-12 flex items-center justify-center">
+            <div className="w-full max-w-lg">
+              <ImageGallery 
+                images={artwork.images} 
+                recordId={artwork.id} 
+                collectionId={artwork.collectionId} 
+                title={artwork.title} 
+              />
+            </div>
+          </div>
         </div>
 
         {/* COLONNE DROITE */}
@@ -101,7 +112,10 @@ export default async function ArtworkPage({ params }: PageProps) {
             </div>
 
             <div className="mt-16 flex items-center justify-between">
-              <div className="text-3xl font-serif text-stone-800">{artwork.price} €</div>
+              <div className="mt-12 text-sm text-stone-500 font-light flex items-center gap-2">
+                  <span>Valeur estimée :</span>
+                  <span className="font-medium text-stone-900">{artwork.price} €</span>
+              </div>
               
               <div className="mt-8">
                 {artwork.status === 'available' ? (

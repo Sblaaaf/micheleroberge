@@ -5,6 +5,9 @@ import { usePathname } from 'next/navigation';
 
 export default function Header() {
   const pathname = usePathname();
+
+  // On n'affiche pas le Header dans l'admin
+  if (pathname.startsWith('/admin')) return null;
   
   // Petite fonction pour savoir si le lien est actif
   const isActive = (path: string) => pathname === path ? 'text-stone-900 border-b border-stone-900' : 'text-stone-400 hover:text-stone-600';
