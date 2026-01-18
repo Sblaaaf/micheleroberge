@@ -1,0 +1,22 @@
+{
+  "name": "Michèle Roberge",
+  "short_name": "Mia",
+  "description": "Galerie d'oeuvres uniques en raku réalisées par Michèle Roberge",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafaf9",
+  "theme_color": "#fafaf9",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

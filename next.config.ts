@@ -10,14 +10,6 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 });
 
 const nextConfig: NextConfig = {
-
-  // Ancienne configuration Static
-  /* output: 'export',
-  images: {
-    unoptimized: true,
-  }, */
-
-  // Nouvelle configuration pour optimiser les images
   images: {
     remotePatterns: [
       {
