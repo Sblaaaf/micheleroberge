@@ -14,7 +14,9 @@ export async function generateStaticParams() {
 // 2. Fonction helper
 async function getArtwork(id: string) {
   try {
-    return await pb.collection('artworks').getOne<Artwork>(id);
+    return await pb.collection('artworks').getOne<Artwork>(id, {
+      expand: 'collection',
+    });
   } catch (error) {
     return null;
   }

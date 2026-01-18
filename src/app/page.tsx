@@ -15,6 +15,7 @@ export default function Home() {
       try {
         const records = await pb.collection('artworks').getFullList<Artwork>({
           sort: '-created',
+          expand: 'collection',
         });
         setArtworks(records);
       } catch (error) {
