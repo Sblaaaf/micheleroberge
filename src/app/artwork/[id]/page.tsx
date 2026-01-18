@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import ReservationForm from '@/components/ReservationForm';
 import ImageGallery from '@/components/ImageGallery';
+import { toast } from 'sonner';
 
 // 1. Static Params : On génère la liste des IDs (ça, ça ne change pas)
 export async function generateStaticParams() {

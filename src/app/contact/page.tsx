@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { toast } from 'sonner';
 
 export default function ContactPage() {
   return (
