@@ -16,9 +16,9 @@ export default function AdminCollections() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     try {
-        const newCol = await pb.collection('collections').create(formData);
+        const newCol = await pb.collection('collections').create<Collection>(formData);
         setCollections([...collections, newCol]);
-        (e.target as HTMLFormElement).reset();
+        e.currentTarget.reset();
         toast.success("Collection ajoutée");
     } catch { toast.error("Erreur"); }
   }

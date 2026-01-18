@@ -43,7 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="p-6 text-2xl font-serif border-b border-stone-800 flex items-center gap-2">
-           <span>Admin Mia</span>
+           <span>Mia - Admin</span>
         </div>
         
         <nav className="flex-1 p-4 space-y-1 text-sm font-medium">

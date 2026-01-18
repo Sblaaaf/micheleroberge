@@ -16,9 +16,9 @@ export default function AdminNews() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     try {
-      const newItem = await pb.collection('news').create(formData);
+      const newItem = await pb.collection('news').create<News>(formData);
       setNews([newItem, ...news]);
-      (e.target as HTMLFormElement).reset();
+      e.currentTarget.reset(); 
       toast.success("Actualité publiée !");
     } catch { toast.error("Erreur de publication"); }
   }
