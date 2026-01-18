@@ -13,14 +13,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (pb.authStore.isValid) {
-      setIsAuth(true);
+    const userIsValid = pb.authStore.isValid;
+
+    if (userIsValid) {
+      if (!isAuth) {
+        setIsAuth(true);
+      }
     } else {
       if (pathname !== '/admin/login') {
         router.push('/admin/login');
       }
     }
-  }, [pathname, router]);
+  }, [pathname, router, isAuth]);
 
   if (pathname === '/admin/login') return <>{children}</>;
   if (!isAuth) return null;

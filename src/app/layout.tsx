@@ -25,7 +25,7 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: "Michèle Roberge",
-  description: "Galerie d'oeuvres uniques en raku réalisées par Michèle Roberge",
+  description: "Galerie d&apos;oeuvres uniques en raku réalisées par Michèle Roberge",
   manifest: "/manifest.json",
 };
 
