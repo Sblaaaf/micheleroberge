@@ -17,7 +17,7 @@ export default function Header() {
         <h1 className="text-3xl md:text-4xl font-serif font-light text-stone-900 tracking-wide text-center">
           Atelier Mia
         </h1>
-        <p className="text-sm font-serif text-center text-stone-500 mt-2">Michelle Roberge</p>
+        <p className="text-sm font-serif text-center text-stone-500 mt-2">Michèle Roberge</p>
       </Link>
       
       <nav className="mt-8 flex gap-8 text-xs uppercase tracking-[0.2em] font-medium">
