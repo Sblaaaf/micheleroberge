@@ -18,6 +18,7 @@ export default function EditArtworkPage() {
 
   // 1. On charge l'œuvre ET les collections au démarrage
   useEffect(() => {
+    if (!id) return;
     async function loadData() {
       try {
         const [cols, art] = await Promise.all([
@@ -93,11 +94,12 @@ export default function EditArtworkPage() {
         <div className="grid grid-cols-3 gap-4">
           <div>
             <label className="block text-xs uppercase tracking-widest mb-2">Catégorie</label>
-            <select defaultValue={artwork.category} name="category" className="w-full p-3 bg-stone-50 border">
-              <option value="Vase">Vase</option>
-              <option value="Bol">Bol</option>
-              <option value="Sculpture">Sculpture</option>
-            </select>
+            <input 
+              defaultValue={artwork.category || 'Sculpture'} 
+              name="category" 
+              type="text" 
+              className="w-full p-3 bg-stone-50 border" 
+            />
           </div>
           <div>
             <label className="block text-xs uppercase tracking-widest mb-2">Prix (€)</label>

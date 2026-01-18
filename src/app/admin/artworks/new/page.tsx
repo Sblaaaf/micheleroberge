@@ -56,11 +56,14 @@ export default function NewArtworkPage() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-xs uppercase tracking-widest mb-2">Catégorie</label>
-            <select name="category" className="w-full p-3 bg-stone-50 border">
-              <option value="Vase">Vase</option>
-              <option value="Bol">Bol</option>
-              <option value="Sculpture">Sculpture</option>
-            </select>
+            {/* On met "Sculpture" par défaut pour lui faire gagner du temps */}
+            <input 
+              name="category" 
+              type="text" 
+              defaultValue="Sculpture" 
+              placeholder="Ex: Sculpture, Vase..." 
+              className="w-full p-3 bg-stone-50 border" 
+            />
           </div>
           <div>
             <label className="block text-xs uppercase tracking-widest mb-2">Prix (€)</label>
